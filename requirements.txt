@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+crewai
+crewai-tools
+python-dotenv
+pypdf
+pydantic
+langchain-openai # This is correct for OpenAI
