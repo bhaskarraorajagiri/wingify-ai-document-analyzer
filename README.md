@@ -13,12 +13,19 @@ Multi-agent workflow powered by CrewAI
 REST API built with FastAPI
 Extensible design for future enhancements (queues, DB storage, etc.)
 
-Bugs Found & Fixes
-During debugging, I identified and fixed the following issues:
-LLM Wrapper Misconfiguration
- The project was trying to use ChatOpenAI for a Gemini API key. This caused constant authentication errors.
- Fixed by switching back to OpenAI with the correct OPENAI_API_KEY.
+Debugging Journey
 
+The starter code had several issues. Here are some key fixes I made:
+
+Wrong tool/agent names in CrewAI tasks → Corrected names and task dependencies
+
+API upload crashing because of blocking I/O in async route → Fixed with proper async handling
+
+Config not reading environment variables → Added .env support
+
+Amount parser failing on different locales → Rewrote regex and added tests
+
+App not starting due to circular import → Refactored entrypoint
 Environment Variable Handling
  No .env template was provided, which made setup confusing.
  Added a .env.example file so new developers can quickly configure API keys.
