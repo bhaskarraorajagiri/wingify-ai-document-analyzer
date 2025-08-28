@@ -3,10 +3,30 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.so
 
-# Virtual environments
+# Virtual environments and env files
 .env
-.venv
+.venv/
 env/
 venv/
+.env.*
 
+# Logs
+*.log
+logs/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Test / Coverage
+.coverage
+pytest_cache/
+htmlcov/
+
+# Build / Packaging
+*.egg-info/
+dist/
+build/
