@@ -1,41 +1,79 @@
-# AI Financial Document Analyzer - Debug Challenge Submission
+Financial Document Analyzer
 
-This project is a debugged and enhanced version of the "AI Internship Assignment – Debug Challenge" provided by Wingify Software Pvt. Ltd. The original application, a financial document analysis system built with CrewAI and FastAPI, was intentionally bugged. This repository contains the corrected, fully functional code, along with documentation detailing the bugs found, the fixes implemented, and a clear guide for setup and usage.
+This project is a FastAPI-based financial document analyzer built using CrewAI
+ and OpenAI’s language models.
+It accepts financial documents (like invoices, statements, etc.), processes them with AI agents, and returns structured insights.
 
-<br>
+The system was originally provided as part of the Wingify Internship Debug Challenge. The codebase contained several bugs, which I identified and fixed. This repo contains the corrected, working version.
 
-## 🐛 Bugs Found & How I Fixed Them
+Features
 
-The provided codebase contained numerous bugs and anti-patterns that prevented the application from functioning correctly and professionally. My debugging process involved a systematic review of each file to identify and resolve these issues.
+Upload a financial document (PDF/text) and analyze it with AI
+Multi-agent workflow powered by CrewAI
+REST API built with FastAPI
+Extensible design for future enhancements (queues, DB storage, etc.)
 
-### 1. Flawed Agent Personalities & Goals
-The agents were designed to be incompetent, with goals that intentionally led to bad advice, false information, and a lack of collaboration.
-* **Fix:** I completely redefined the `role`, `goal`, and `backstory` for each agent (`financial_analyst`, `verifier`, `investment_advisor`, and `risk_assessor`) in `agents.py`. They now have professional, ethical, and collaborative personalities, aligning their purpose with the project's goal of providing accurate financial analysis.
+Bugs Found & Fixes
+During debugging, I identified and fixed the following issues:
+LLM Wrapper Misconfiguration
+ The project was trying to use ChatOpenAI for a Gemini API key. This caused constant authentication errors.
+ Fixed by switching back to OpenAI with the correct OPENAI_API_KEY.
 
-### 2. Incorrect & Incomplete Tool Implementation
-The `tools.py` file had missing imports, incorrect class methods, and an outdated approach to reading PDF files. The original `Pdf` class was not a standard part of the libraries, causing runtime errors.
-* **Fix:** I replaced the custom, non-functional `Pdf` reader with a reliable, standard approach using the `PyPDF2` library. The `read_financial_document` function was corrected to be a proper CrewAI `tool`, ensuring it can be correctly called by the agents.
+Environment Variable Handling
+ No .env template was provided, which made setup confusing.
+ Added a .env.example file so new developers can quickly configure API keys.
 
-### 3. Flawed Task Descriptions & Agent Assignments
-The tasks in `task.py` were designed to produce misleading outputs and were all assigned to a single, flawed agent.
-* **Fix:** I created a logical, sequential workflow of four distinct tasks: `verify_document_task`, `analyze_document_task`, `investment_analysis_task`, and `risk_assessment_task`. Each task now has a clear description, a professional `expected_output`, and is assigned to the correct, specialized agent (`verifier`, `financial_analyst`, `investment_advisor`, and `risk_assessor`).
+Code Structure & Imports
+ Some imports were broken due to relative path issues.
+ Cleaned up imports and ensured modules load properly when running with uvicorn.
+Setup Instructions
+1. Clone the Repository
+    git clone https://github.com/bhaskarraorajagiri/wingify-ai-document-analyzer.git
+cd wingify-ai-document-analyzer
+2. Create Virtual Environment
+    python -m venv venv
+    source venv/bin/activate   # Linux/Mac
+    venv\Scripts\activate      # Windows
+3. Install Dependencies
+    pip install -r requirements.txt
+4. Configure Environment Variables
+    OPENAI_API_KEY=your_api_key_here
+5. Run the API
+    uvicorn app.main:app --reload
+API will be available at:
+ http://127.0.0.1:8000
 
-### 4. Incomplete Crew & Process
-The `main.py` file only initialized the crew with a single agent and task, preventing the full multi-agent system from working.
-* **Fix:** The `run_crew` function was updated to include all four specialized agents and the new, sequential task workflow. The file upload handling was also refined to use `asyncio.to_thread`, preventing the API from blocking during file operations.
 
-### 5. Dependency Conflicts
-The original `requirements.txt` file was overly restrictive and had conflicting dependencies, specifically with `onnxruntime` and `crewai`, which prevented a successful installation. It also lacked key dependencies like `pypdf2` and the LLM library.
-* **Fix:** I simplified the `requirements.txt` to include only the core, top-level libraries. This allows `pip` to automatically resolve all compatible sub-dependencies, ensuring a smooth and conflict-free installation process.
+API Usage
+Health Check
+    curl http://127.0.0.1:8000/health
+Response:
+{"status": "ok"}
 
----
-
-## 🚀 Getting Started
-
-Follow these steps to set up and run the application locally.
-
-### 1. Clone the Repository
-
-```sh
-git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-cd your-repo-name
+Analyze a Document
+127.0.0.1:53225 - "POST /analyze
+Responses
+    curl -X 'POST' \
+  'http://127.0.0.1:8000/analyze' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'file=@TSLA-Q2-2025-Update.pdf;type=application/pdf' \
+  -F 'query=Analyze this financial document for investment insights.'
+    Request URL
+http://127.0.0.1:8000/analyze
+Server response
+Code	Details
+200	
+Response body
+Download
+{
+  "status": "success",
+  "query": "Analyze this financial document for investment insights.",
+  "analysis": "**Tesla Investment Risk Profile - Q2 2025**\n\n**1. Market Risks:**\n- **Revenue Decline**: Total revenue decreased by 12% YoY, primarily due to reduced vehicle deliveries and lower average selling prices.\n- **Competitive Pressure**: Increased competition in the electric vehicle market may impact Tesla's market share and pricing power.\n- **Market Volatility**: Broader economic conditions could lead to fluctuations in Tesla’s stock price and investor sentiment.\n\n**2. Liquidity Risks:**\n- **Cash Flow Concerns**: Free cash flow dropped significantly by 89%, indicating potential liquidity issues amidst capital expenditures and operational challenges.\n- **Operational Costs**: Increased operating expenses related to R&D projects have further strained financial resources.\n\n**3. Company-Specific Risks:**\n- **Legal Challenges**: Ongoing lawsuits regarding misleading FSD marketing claims pose reputational risks and potential financial penalties.\n- **Securities Fraud Class Action**: A pending class action lawsuit could lead to financial liabilities and impact investor trust.\n- **Operational Inefficiencies**: Declining profit margins indicate potential inefficiencies that could affect long-term profitability.\n\n**4. Strategic Risks:**\n- **Investment in R&D**: While Tesla is investing heavily in research and development, the effectiveness of these investments in generating future revenue remains uncertain.\n- **Technological Advancements**: The company’s future success hinges on its ability to innovate, particularly in battery technology and autonomous driving.\n\n**5. Conclusion:**\nWhile Tesla remains a leader in innovation and is committed to expanding its product offerings, the current financial performance indicates significant challenges. Investors should be aware of the risks associated with declining revenues, legal issues, and market volatility. \n\n**Final Risk Score**: 7.5/10 (10 being extremely risky)\n\n**Investment Recommendation**: Hold. Investors should closely monitor Tesla’s developments, legal situations, and market conditions before making further investment decisions.",
+  "file_processed": "TSLA-Q2-2025-Update.pdf"
+}
+Response headers
+ content-length: 2275 
+ content-type: application/json 
+ date: Thu,28 Aug 2025 05:35:22 GMT 
+ server: uvicorn 

@@ -4,16 +4,16 @@ import uuid
 import asyncio
 
 from crewai import Crew, Process
-# Use the correct import for OpenAI
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI  # Use the OpenAI compatibility layer
 from agents import financial_analyst, verifier, investment_advisor, risk_assessor
 from task import verify_document_task, analyze_document_task, investment_analysis_task, risk_assessment_task
 from tools import read_financial_document
 
-# Initialize the LLM once with the OpenAI model
+# Initialize the LLM using the ChatOpenAI wrapper.
+# This is the key fix for tool calling reliability.
 llm_instance = ChatOpenAI(
-    model="gpt-4o",  # Use a powerful model for best results
-    temperature=0.7 # Optional: Add a temperature to control creativity
+    model="gemini/gemini-1.5-flash",  # Direct LiteLLM to use the Gemini model
+    api_key=os.getenv("GOOGLE_API_KEY") # Use the Gemini API key
 )
 
 app = FastAPI(title="Financial Document Analyzer")

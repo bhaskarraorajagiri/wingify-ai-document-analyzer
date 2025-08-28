@@ -4,15 +4,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from crewai import Agent
-# Use the correct import for OpenAI
-from langchain_openai import ChatOpenAI
-from tools import read_financial_document
+from langchain_google_genai import ChatGoogleGenerativeAI # Use the OpenAI compatibility layer
+from tools import read_financial_document, search_tool
 
-# Initialize the LLM once with the OpenAI model
+from langchain_openai import ChatOpenAI
+
 llm_instance = ChatOpenAI(
-    model="gpt-4o",
-    temperature=0.7
+    model="gpt-4o-mini",
+    api_key=os.getenv("OPENAI_API_KEY")
 )
+
 
 # Creating a Professional Financial Analyst agent
 financial_analyst = Agent(
@@ -29,8 +30,8 @@ financial_analyst = Agent(
         "identifying trends, calculating ratios, and summarizing complex "
         "financial data into clear, actionable insights."
     ),
-    tools=[read_financial_document],
-    llm=llm_instance, # Use the shared LLM instance
+    tools=[read_financial_document, search_tool],
+    llm=llm_instance,
     max_iter=15,
     max_rpm=10,
     allow_delegation=True
@@ -51,7 +52,7 @@ verifier = Agent(
         "any analysis begins."
     ),
     tools=[read_financial_document],
-    llm=llm_instance, # Use the shared LLM instance
+    llm=llm_instance,
     max_iter=15,
     max_rpm=10,
     allow_delegation=True
@@ -72,8 +73,8 @@ investment_advisor = Agent(
         "You adhere to all regulatory standards and only recommend "
         "reputable investment products."
     ),
-    tools=[],
-    llm=llm_instance, # Use the shared LLM instance
+    tools=[search_tool],
+    llm=llm_instance,
     max_iter=15,
     max_rpm=10,
     allow_delegation=True
@@ -93,7 +94,7 @@ risk_assessor = Agent(
         "potential downsides and market volatility."
     ),
     tools=[],
-    llm=llm_instance, # Use the shared LLM instance
+    llm=llm_instance,
     max_iter=15,
     max_rpm=10,
     allow_delegation=True

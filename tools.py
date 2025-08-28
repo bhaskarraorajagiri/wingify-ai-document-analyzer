@@ -1,11 +1,15 @@
 ## Importing libraries and files
 import os
 from dotenv import load_dotenv
-from crewai.tools import BaseTool # FIX: Import BaseTool from crewai instead of crewai_tools
+from crewai_tools import SerperDevTool
+from crewai.tools import BaseTool # Correct import for BaseTool
 from pypdf import PdfReader
 from pydantic import BaseModel, Field
 
 load_dotenv()
+
+# SerperDevTool automatically uses the SERPER_API_KEY environment variable.
+search_tool = SerperDevTool()
 
 # Define the input schema for the custom tool
 class ReadFinancialDocumentInput(BaseModel):

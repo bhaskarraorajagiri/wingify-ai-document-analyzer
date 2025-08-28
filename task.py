@@ -1,10 +1,7 @@
 ## Importing libraries and files
 from crewai import Task
 from agents import financial_analyst, verifier, investment_advisor, risk_assessor
-from tools import read_financial_document
-
-# Note: The search_tool import is removed as it's not used in these tasks
-# from tools import search_tool
+from tools import read_financial_document, search_tool # Import search_tool here
 
 ## Creating a task to verify the document
 verify_document_task = Task(
@@ -35,26 +32,28 @@ analyze_document_task = Task(
 
 ## Creating an investment analysis task
 investment_analysis_task = Task(
-    description="Based on the detailed financial analysis, provide professional, "
-                 "data-driven investment recommendations. Evaluate the company's "
-                 "potential for growth and its competitive position in the market. "
-                 "Consider the user's query: {query} when formulating advice.",
+    description="""Based on the detailed financial analysis, provide professional,
+                 data-driven investment recommendations. Evaluate the company's
+                 potential for growth and its competitive position in the market.
+                 Consider the user's query: {query} when formulating advice.
+                 Use the search tool to find relevant market news and analyst ratings.""",
     expected_output="A comprehensive investment recommendation report with clear "
-                     "reasons for each suggestion, supported by financial data.",
+                     "reasons for each suggestion, supported by financial data and external research.",
     agent=investment_advisor,
-    tools=[],
+    tools=[search_tool], # FIX: Add search tool to the task
     async_execution=False
 )
 
 ## Creating a risk assessment task
 risk_assessment_task = Task(
-    description="Based on the financial analysis, identify and quantify the "
-                 "potential risks associated with investing in the company. "
-                 "Provide a clear risk profile, including market risks, liquidity risks, "
-                 "and company-specific risks. The user's query is: {query}.",
+    description="""Based on the financial analysis, identify and quantify the
+                 potential risks associated with investing in the company.
+                 Provide a clear risk profile, including market risks, liquidity risks,
+                 and company-specific risks. The user's query is: {query}.
+                 Use the search tool to research potential risks, legal issues, or market volatility.""",
     expected_output="A detailed risk assessment report that outlines all potential risks "
                      "and their potential impact, along with a final risk score.",
     agent=risk_assessor,
-    tools=[],
+    tools=[search_tool], # FIX: Add search tool to the task
     async_execution=False
 )
